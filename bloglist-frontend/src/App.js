@@ -1,17 +1,18 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import Blog from './components/Blog'
 import blogService from './services/blogs'
 import Login from './components/login'
 import NewBlog from './components/newBlog'
 import Notification from './components/Notification'
+import Togglable from './components/togglable'
 // import { set } from 'mongoose'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
-  const [username, setUsername] = useState('')
-  const [password, setPassword] = useState('')
+  // const [blogs, setBlogs] = useState(sortedBlogs)
   const [user, setUser] = useState(null)
   const [notification, setNotification] = useState('')
+  const blogFormRef = useRef()
 
   useEffect(() => {
     const loggedInUser = window.localStorage.getItem('loggedInUser')
@@ -23,11 +24,24 @@ const App = () => {
     }
   }, [])
 
-  useEffect(() => {
-    blogService.getAll().then(blogs =>
-      setBlogs( blogs )
-    )  
-  }, [])
+  const getBlogs = () => {
+   return blogService.getAll().then(blogs =>
+      setBlogs(() =>  blogs.sort((a, b) => b.likes - a.likes) )
+    ).catch((error) => {
+      setNotification(error.response.data.error)
+      if(error.response.data.error){
+        handleLogout()
+      }
+      setTimeout(() => {
+        setNotification(null)
+      }, 5000)
+    }) 
+  }
+  
+  useEffect(getBlogs, [])
+
+  // const sortedBlogs = all
+
 
   const handleLogout = () =>{
     window.localStorage.removeItem('loggedInUser')
@@ -39,18 +53,23 @@ const App = () => {
        <Notification info={notification} />
       {user === null ? '' : <div>{user.name} is logged in <button onClick={handleLogout}>Logout</button></div>}
       {user === null ? 
-        <Login 
-          username={username}
-          password={password}
-          setUser={setUser}
-          setUsername={setUsername}
-          setPassword={setPassword}
-          setNotification={setNotification}
-        /> : 
         <div>
-          <NewBlog setNotification={setNotification}/>
-          {blogs.map(blog =>
-        <Blog key={blog.id} blog={blog} />)}
+          <h5>This is a blog list app. Login to continue.</h5>
+          <Togglable buttonLabel='Login'>
+            <Login 
+              setUser={setUser}
+              setNotification={setNotification}
+              getBlogs={getBlogs}
+            /> 
+          </Togglable>
+        </div>
+        : 
+        <div>
+          <Togglable buttonLabel='Add New Blog' ref={blogFormRef}>
+            <NewBlog setNotification={setNotification} getBlogs={getBlogs} />
+          </Togglable>
+
+          {blogs.map(blog => <Blog key={blog.id} blog={blog} setBlogs={setBlogs} getBlogs={getBlogs}/>)}
         </div>
       }
     </div>

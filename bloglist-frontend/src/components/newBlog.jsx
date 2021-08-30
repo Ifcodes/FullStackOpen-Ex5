@@ -1,7 +1,7 @@
 import { useState } from "react"
 import blogServices from "../services/blogs"
 
-const NewBlog = ({setNotification}) => {
+const NewBlog = ({setNotification, getBlogs}) => {
   const [title, setTitle] = useState('')
   const [author, setAuthor] = useState('')
   const [url, setUrl] = useState('')
@@ -24,12 +24,13 @@ const NewBlog = ({setNotification}) => {
         setNotification(null)
       }, 5000)
     }).catch((error) => {
-      console.log(error)
-       setNotification(error)
+      setNotification(error.response.data.error)
       setTimeout(() => {
         setNotification(null)
-      }, 5000)
+      }, 5000) 
     })
+
+    getBlogs()
   }
   return (
     <>

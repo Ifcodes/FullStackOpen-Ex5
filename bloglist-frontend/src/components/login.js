@@ -1,13 +1,18 @@
+import {useState} from 'react'
 import loginService from "../services/login"
 import blogServices from "../services/blogs"
 
-const Login = ({username, setUsername, password, setPassword, setUser, setNotification}) => {
+const Login = ({setUser, setNotification, getBlogs}) => {
+  const [username, setUsername] = useState('')
+  const [password, setPassword] = useState('')
+
   const handleLogin = async (e) => {
     e.preventDefault()
 
     try {
       const user = await loginService.login({username, password})
-      console.log(user)
+
+     
       window.localStorage.setItem('loggedInUser', JSON.stringify(user))
 
       blogServices.setToken(user.userToken)
@@ -19,6 +24,7 @@ const Login = ({username, setUsername, password, setPassword, setUser, setNotifi
       setTimeout(() => {
         setNotification(null)
       },5000)
+      getBlogs()
     } catch (error) {
       console.log(error)
       setNotification('Wrong username or password') 
