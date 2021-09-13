@@ -52,9 +52,9 @@ const Blog = ({blog, setBlogs, getBlogs}) => {
         <button onClick={() => setVisible(!visible)} style={setMargin}>
           {visible ? 'hide' : 'view'}
         </button>
-        <div style={visibility}>
+        <div style={visibility} className='togglable'>
           Blog Link: {blog.url} <br />
-          Likes: {likes} <button onClick={() => addLikes(blog.id)}>Like</button> <br />
+          Likes: {likes} <button onClick={() => addLikes(blog.id)} className='likeBtn'>Like</button> <br />
           Posted by {blog.author} <br />
         </div>
         <button onClick={() => deleteBlog(blog.id)}>Delete</button>

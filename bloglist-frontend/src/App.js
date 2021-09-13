@@ -40,7 +40,20 @@ const App = () => {
   
   useEffect(getBlogs, [])
 
-  // const sortedBlogs = all
+  const createBlog = (blog) => {
+    blogService.create(blog).then(response => {
+      setNotification(`New blog ${blog.title} added successully by ${blog.author}`)
+      setTimeout(() => {
+        setNotification(null)
+      }, 5000)
+      getBlogs()
+    }).catch((error) => {
+      setNotification(error.response.data.error)
+      setTimeout(() => {
+        setNotification(null)
+      }, 5000) 
+    })
+  }
 
 
   const handleLogout = () =>{
@@ -66,7 +79,7 @@ const App = () => {
         : 
         <div>
           <Togglable buttonLabel='Add New Blog' ref={blogFormRef}>
-            <NewBlog setNotification={setNotification} getBlogs={getBlogs} />
+            <NewBlog setNotification={setNotification} createBlog={createBlog} />
           </Togglable>
 
           {blogs.map(blog => <Blog key={blog.id} blog={blog} setBlogs={setBlogs} getBlogs={getBlogs}/>)}

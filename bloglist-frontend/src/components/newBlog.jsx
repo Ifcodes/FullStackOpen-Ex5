@@ -1,7 +1,7 @@
 import { useState } from "react"
-import blogServices from "../services/blogs"
+// import blogServices from "../services/blogs"
 
-const NewBlog = ({setNotification, getBlogs}) => {
+const NewBlog = ({setNotification, createBlog}) => {
   const [title, setTitle] = useState('')
   const [author, setAuthor] = useState('')
   const [url, setUrl] = useState('')
@@ -9,34 +9,23 @@ const NewBlog = ({setNotification, getBlogs}) => {
   const addNewBlog = (e) => {
     e.preventDefault()
 
-    const blog = {
+    createBlog({
       title: title,
       author: author,
       url: url,
-    }
-
-    blogServices.create(blog).then(response => {
-      setTitle('')
-      setAuthor('')
-      setUrl('')
-      setNotification(`New blog ${title} added successully by ${author}`)
-      setTimeout(() => {
-        setNotification(null)
-      }, 5000)
-    }).catch((error) => {
-      setNotification(error.response.data.error)
-      setTimeout(() => {
-        setNotification(null)
-      }, 5000) 
     })
 
-    getBlogs()
-  }
+    setTitle('')
+    setAuthor('')
+    setUrl('')
+    
+}
   return (
     <>
       <form onSubmit={addNewBlog}>
         Title:
         <input 
+          id='title'
           type="text"
           value={title}
           name="title"
